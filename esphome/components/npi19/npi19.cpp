@@ -67,6 +67,16 @@ i2c::ErrorCode NPI19Component::read_(uint16_t &temperature_raw, uint16_t &pressu
 }
 
 float NPI19Component::convert_temperature_(uint16_t temperature_raw) {
+  /*
+   * Correspondance with Amphenol confirmed the appropriate equation for computing temperature is:
+   * T (°C) =(((((Th*8)+Tl)/2048)*200)-50), where Th is the high (third) byte and Tl is the low (fourth) byte.
+   *
+   * Tl is actually the upper 3 bits of the fourth data byte; the first 5 (LSBs) must be masked out.
+   *
+   * Note that although the NPI-19 I2C Series has a temperature output, we don’t specify its accuracy on
+   * the published data sheet.  For this reason, the sensor should not be used as a calibrated temperature
+   * reading; it’s only intended for curve fitting data during compensation.
+   */
   const float temperature_bits_span_ = 2048;
   const float temperature_max_ = 150;
   const float temperature_min_ = -50;
