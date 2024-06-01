@@ -66,7 +66,7 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
     return err;
   }
 
-  // wait for measurement 2ms (as demonstrated in tem3200 sample code)
+  // wait for measurement 2ms (as illustrated in tem3200 sample code)
   delay(2);
 
   // read datafrom senesor
@@ -119,20 +119,18 @@ void TEM3200Component::update() {
       return;
     }
 
-    if (status != NONE) {
-      switch (status) {
-        case RESERVED:
-          ESP_LOGE(TAG, "Failed: Device return RESERVED status");
-          this->status_set_warning();
-          return;
-        case FAULT:
-          ESP_LOGE(TAG, "Failed: FAULT condition in the SSC or sensing element");
-          this->status_set_warning();
-          return;
-        case STALE:
-          ESP_LOGE(TAG, "Warning: STALE Data. Data has been fetched since last measurement cycle");
-          break;
-      }
+    switch (status) {
+      case RESERVED:
+        ESP_LOGE(TAG, "Failed: Device return RESERVED status");
+        this->status_set_warning();
+        return;
+      case FAULT:
+        ESP_LOGE(TAG, "Failed: FAULT condition in the SSC or sensing element");
+        this->status_set_warning();
+        return;
+      case STALE:
+        ESP_LOGE(TAG, "Warning: STALE Data. Data has been fetched since last measurement cycle");
+        break;
     }
 
     float temperature = convert_temperature_(temperature_raw);
