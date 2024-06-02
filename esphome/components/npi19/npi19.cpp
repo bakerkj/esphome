@@ -54,10 +54,10 @@ i2c::ErrorCode NPI19Component::read_(uint16_t &temperature_raw, uint16_t &pressu
   }
 
   // extract top 6 bits of first byte and all bits of second byte for pressure
-  pressure_raw = ((response[0] & 0x3F) << 8) | (response[1] & 0xFF);
+  pressure_raw = ((response[0] & 0x3F) << 8) | response[1];
 
   // extract all bytes of 3rd byte and top 3 bits of fourth byte for temperature
-  temperature_raw = (((uint16_t) response[2] & 0xFF) << 3) | ((response[3] & 0xE0) >> 5);
+  temperature_raw = (response[2] << 3) | ((response[3] & 0xE0) >> 5);
 
   return r_err;
 }
