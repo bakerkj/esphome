@@ -69,7 +69,7 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
   // wait for measurement 2ms (as illustrated in tem3200 sample code)
   delay(2);
 
-  // read datafrom senesor
+  // read data from sensor
   uint8_t response[4] = {0x00, 0x00, 0x00, 0x00};
   err = this->read(response, 4);
 
