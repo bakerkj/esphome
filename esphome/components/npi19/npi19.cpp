@@ -13,12 +13,11 @@ static const uint8_t READ_COMMAND = 0xAC;
 void NPI19Component::setup() {
   ESP_LOGCONFIG(TAG, "Setting up NPI19...");
 
-  uint16_t temperature_raw(0);
-  uint16_t pressure_raw(0);
-
   // startup device delay
   delay(10);
 
+  uint16_t temperature_raw(0);
+  uint16_t pressure_raw(0);
   i2c::ErrorCode err = this->read_(temperature_raw, pressure_raw);
   if (err != i2c::ERROR_OK) {
     ESP_LOGCONFIG(TAG, "    I2C Communication Failed...");
@@ -40,14 +39,14 @@ void NPI19Component::dump_config() {
 float NPI19Component::get_setup_priority() const { return setup_priority::DATA; }
 
 i2c::ErrorCode NPI19Component::read_(uint16_t &temperature_raw, uint16_t &pressure_raw) {
+  // initiate data read from device
   i2c::ErrorCode w_err = write(&READ_COMMAND, sizeof(READ_COMMAND), true);
   if (w_err != i2c::ERROR_OK) {
     return w_err;
   }
 
-  uint8_t response[4] = {0x00, 0x00, 0x00, 0x00};
-
   // read 4 bytes from senesor
+  uint8_t response[4] = {0x00, 0x00, 0x00, 0x00};
   i2c::ErrorCode r_err = this->read(response, 4);
 
   if (r_err != i2c::ERROR_OK) {
@@ -70,9 +69,12 @@ float NPI19Component::convert_temperature_(uint16_t temperature_raw) {
    *
    * Tl is actually the upper 3 bits of the fourth data byte; the first 5 (LSBs) must be masked out.
    *
-   * Note that although the NPI-19 I2C Series has a temperature output, we don’t specify its accuracy on
-   * the published data sheet.  For this reason, the sensor should not be used as a calibrated temperature
-   * reading; it’s only intended for curve fitting data during compensation.
+   *
+   * The NPI-19 I2C has a temperature output, however the manufacturer does
+   * not specify its accuracy on the published datasheet. They indicate
+   * that the sensor should not be used as a calibrated temperature
+   * reading; it’s only intended for curve fitting data during
+   * compensation.
    */
   const float temperature_bits_span_ = 2048;
   const float temperature_max_ = 150;
