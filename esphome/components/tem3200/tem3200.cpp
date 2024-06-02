@@ -59,28 +59,33 @@ void TEM3200Component::dump_config() {
 float TEM3200Component::get_setup_priority() const { return setup_priority::DATA; }
 
 i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_raw, uint16_t &pressure_raw) {
-  // request measurement
-  i2c::ErrorCode err = this->write(NULL, 0, true);
-
-  if (err != i2c::ERROR_OK) {
-    return err;
-  }
-
-  // wait for measurement 2ms (as illustrated in tem3200 sample code)
-  delay(2);
-
-  // read data from sensor
   uint8_t response[4] = {0x00, 0x00, 0x00, 0x00};
-  err = this->read(response, 4);
 
+  // initiate data read
+  i2c::ErrorCode err = this->read(response, 4);
   if (err != i2c::ERROR_OK) {
     return err;
   }
 
   // extract top 2 bits of first byte for status
-  uint8_t status_raw = (response[0] & 0xc0) >> 6;
+  status = (ErrorCode) (response[0] & 0xc0) >> 6;
+  if (status == RESERVED || status == FAULT) {
+    return err;
+  }
 
-  status = (ErrorCode) status_raw;
+  // if data is stale; reread
+  if (status == STALE) {
+    // wait for measurement 2ms (as illustrated in tem3200 sample code)
+    delay(2);
+
+    err = this->read(response, 4);
+    if (err != i2c::ERROR_OK) {
+      return err;
+    }
+  }
+
+  // extract top 2 bits of first byte for status
+  status = (ErrorCode) (response[0] & 0xc0) >> 6;
   if (status == RESERVED || status == FAULT) {
     return err;
   }
@@ -110,7 +115,6 @@ void TEM3200Component::update() {
     uint8_t status(NONE);
     uint16_t temperature_raw(0);
     uint16_t pressure_raw(0);
-
     i2c::ErrorCode err = this->read_(status, temperature_raw, pressure_raw);
 
     if (err != i2c::ERROR_OK) {
