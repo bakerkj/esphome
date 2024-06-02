@@ -86,10 +86,10 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
   }
 
   // extract top 6 bits of first byte and all bits of second byte for pressure
-  pressure_raw = (((response[0] & 0x3f)) << 8 | ((response[1] & 0xff) << 0));
+  pressure_raw = (((response[0] & 0x3f)) << 8 | response[1]);
 
   // extract all bytes of 3rd byte and top 3 bits of fourth byte for temperature
-  temperature_raw = (((response[2] & 0xff) << 3) | (response[3] & 0xe0) >> 5);
+  temperature_raw = ((response[2] << 3) | (response[3] & 0xe0) >> 5);
 
   return err;
 }
