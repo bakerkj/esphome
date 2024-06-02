@@ -3,9 +3,6 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/hal.h"
 
-// https://www.amphenol-sensors.com/hubfs/I2C%20NPI-19%20product%20application%20Note.pdf
-// https://forum.arduino.cc/t/code-help-to-receive-data-from-i2c-vacuum-pressure-sensor/1025416/14
-
 namespace esphome {
 namespace npi19 {
 
