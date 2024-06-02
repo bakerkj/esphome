@@ -126,7 +126,7 @@ void TEM3200Component::update() {
         return;
       case FAULT:
         ESP_LOGE(TAG, "Failed: FAULT condition in the SSC or sensing element");
-        this->status_set_warning();
+        this->mark_failed();
         return;
       case STALE:
         ESP_LOGE(TAG, "Warning: STALE Data. Data has been fetched since last measurement cycle");
