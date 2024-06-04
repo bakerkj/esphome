@@ -12,5 +12,5 @@ sensor:
     temperature:
       name: water temperature
 
-    pressure:
+    raw_pressure:
       name: water pressure

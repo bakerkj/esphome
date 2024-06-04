@@ -4,7 +4,6 @@ from esphome.components import i2c, sensor
 
 from esphome.const import (
     CONF_ID,
-    CONF_PRESSURE,
     CONF_TEMPERATURE,
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
@@ -13,6 +12,7 @@ from esphome.const import (
 
 CODEOWNERS = ["@bakerkj"]
 DEPENDENCIES = ["i2c"]
+CONFIG_MULTI = True
 
 tem3200_ns = cg.esphome_ns.namespace("tem3200")
 
@@ -20,7 +20,7 @@ TEM3200Component = tem3200_ns.class_(
     "TEM3200Component", cg.PollingComponent, i2c.I2CDevice
 )
 
-CONFIG_MULTI = True
+CONF_RAW_PRESSURE = "raw_pressure"
 
 CONFIG_SCHEMA = (
     cv.Schema(
@@ -32,7 +32,7 @@ CONFIG_SCHEMA = (
                 device_class=DEVICE_CLASS_TEMPERATURE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
-            cv.Optional(CONF_PRESSURE): sensor.sensor_schema(
+            cv.Optional(CONF_RAW_PRESSURE): sensor.sensor_schema(
                 accuracy_decimals=0, state_class=STATE_CLASS_MEASUREMENT
             ),
         }
@@ -51,6 +51,6 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_TEMPERATURE])
         cg.add(var.set_temperature_sensor(sens))
 
-    if CONF_PRESSURE in config:
-        sens = await sensor.new_sensor(config[CONF_PRESSURE])
-        cg.add(var.set_pressure_sensor(sens))
+    if CONF_RAW_PRESSURE in config:
+        sens = await sensor.new_sensor(config[CONF_RAW_PRESSURE])
+        cg.add(var.set_raw_pressure_sensor(sens))

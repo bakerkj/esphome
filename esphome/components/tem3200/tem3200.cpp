@@ -53,8 +53,8 @@ void TEM3200Component::dump_config() {
   ESP_LOGCONFIG(TAG, "TEM3200:");
   LOG_I2C_DEVICE(this);
   LOG_UPDATE_INTERVAL(this);
+  LOG_SENSOR("  ", "Raw Pressure", this->raw_pressure_sensor_);
   LOG_SENSOR("  ", "Temperature", this->temperature_sensor_);
-  LOG_SENSOR("  ", "Pressure", this->pressure_sensor_);
 }
 
 float TEM3200Component::get_setup_priority() const { return setup_priority::DATA; }
@@ -141,12 +141,12 @@ void TEM3200Component::update() {
 
     float temperature = convert_temperature_(temperature_raw);
 
-    ESP_LOGD(TAG, "Got temperature=%.1f°C  pressure=%draw", temperature, pressure_raw);
+    ESP_LOGD(TAG, "Got pressure=%draw temperature=%.1f°C", pressure_raw, temperature);
 
     if (this->temperature_sensor_ != nullptr)
       this->temperature_sensor_->publish_state(temperature);
-    if (this->pressure_sensor_ != nullptr)
-      this->pressure_sensor_->publish_state(pressure_raw);
+    if (this->raw_pressure_sensor_ != nullptr)
+      this->raw_pressure_sensor_->publish_state(pressure_raw);
 
     this->status_clear_warning();
   });
