@@ -32,7 +32,7 @@ void NPI19Component::dump_config() {
   ESP_LOGCONFIG(TAG, "NPI19:");
   LOG_I2C_DEVICE(this);
   LOG_UPDATE_INTERVAL(this);
-  LOG_SENSOR("  ", "Pressure", this->pressure_sensor_);
+  LOG_SENSOR("  ", "Raw Pressure", this->raw_pressure_sensor_);
   LOG_SENSOR("  ", "Temperature", this->temperature_sensor_);
 }
 
@@ -105,8 +105,8 @@ void NPI19Component::update() {
 
     if (this->temperature_sensor_ != nullptr)
       this->temperature_sensor_->publish_state(temperature);
-    if (this->pressure_sensor_ != nullptr)
-      this->pressure_sensor_->publish_state(pressure_raw);
+    if (this->raw_pressure_sensor_ != nullptr)
+      this->raw_pressure_sensor_->publish_state(pressure_raw);
 
     this->status_clear_warning();
   });
