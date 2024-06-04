@@ -42,7 +42,8 @@ void TEM3200Component::setup() {
       this->mark_failed();
       return;
     case STALE:
-      ESP_LOGE(TAG, "STALE Data. Data has been fetched since last measurement cycle");
+      ESP_LOGE(TAG, "STALE data. Data has not been updated since last fetch");
+      this->status_set_warning();
       break;
   }
   ESP_LOGCONFIG(TAG, "    Success...");
@@ -133,7 +134,7 @@ void TEM3200Component::update() {
         this->mark_failed();
         return;
       case STALE:
-        ESP_LOGE(TAG, "Warning: STALE Data. Data has been fetched since last measurement cycle");
+        ESP_LOGE(TAG, "Warning: STALE data. Data has not been updated since last fetch");
         this->status_set_warning();
         return;
     }
