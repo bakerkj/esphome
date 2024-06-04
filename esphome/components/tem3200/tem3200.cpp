@@ -134,7 +134,8 @@ void TEM3200Component::update() {
         return;
       case STALE:
         ESP_LOGE(TAG, "Warning: STALE Data. Data has been fetched since last measurement cycle");
-        break;
+        this->status_set_warning();
+        return;
     }
 
     float temperature = convert_temperature_(temperature_raw);
