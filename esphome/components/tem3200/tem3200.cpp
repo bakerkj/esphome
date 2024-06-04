@@ -19,13 +19,13 @@ void TEM3200Component::setup() {
   ESP_LOGCONFIG(TAG, "Setting up TEM3200...");
 
   uint8_t status(NONE);
-  uint16_t temperature_raw(0);
-  uint16_t pressure_raw(0);
+  uint16_t raw_temperature(0);
+  uint16_t raw_pressure(0);
 
   // startup device delay
   delay(10);
 
-  i2c::ErrorCode err = this->read_(status, temperature_raw, pressure_raw);
+  i2c::ErrorCode err = this->read_(status, raw_temperature, raw_pressure);
   if (err != i2c::ERROR_OK) {
     ESP_LOGCONFIG(TAG, "    I2C Communication Failed...");
     this->mark_failed();
@@ -59,7 +59,7 @@ void TEM3200Component::dump_config() {
 
 float TEM3200Component::get_setup_priority() const { return setup_priority::DATA; }
 
-i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_raw, uint16_t &pressure_raw) {
+i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &raw_temperature, uint16_t &raw_pressure) {
   uint8_t response[4] = {0x00, 0x00, 0x00, 0x00};
 
   // initiate data read
@@ -92,21 +92,21 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
   }
 
   // extract top 6 bits of first byte and all bits of second byte for pressure
-  pressure_raw = (((response[0] & 0x3f)) << 8 | response[1]);
+  raw_pressure = (((response[0] & 0x3f)) << 8 | response[1]);
 
   // extract all bytes of 3rd byte and top 3 bits of fourth byte for temperature
-  temperature_raw = ((response[2] << 3) | (response[3] & 0xe0) >> 5);
+  raw_temperature = ((response[2] << 3) | (response[3] & 0xe0) >> 5);
 
   return i2c::ERROR_OK;
 }
 
-float TEM3200Component::convert_temperature_(uint16_t temperature_raw) {
+float TEM3200Component::convert_temperature_(uint16_t raw_temperature) {
   const float temperature_bits_span_ = 2048;
   const float temperature_max_ = 150;
   const float temperature_min_ = -50;
   const float temperature_span_ = temperature_max_ - temperature_min_;
 
-  float temperature = (temperature_raw * temperature_span_ / temperature_bits_span_) + temperature_min_;
+  float temperature = (raw_temperature * temperature_span_ / temperature_bits_span_) + temperature_min_;
 
   return temperature;
 }
@@ -114,9 +114,9 @@ float TEM3200Component::convert_temperature_(uint16_t temperature_raw) {
 void TEM3200Component::update() {
   this->set_timeout(50, [this]() {
     uint8_t status(NONE);
-    uint16_t temperature_raw(0);
-    uint16_t pressure_raw(0);
-    i2c::ErrorCode err = this->read_(status, temperature_raw, pressure_raw);
+    uint16_t raw_temperature(0);
+    uint16_t raw_pressure(0);
+    i2c::ErrorCode err = this->read_(status, raw_temperature, raw_pressure);
 
     if (err != i2c::ERROR_OK) {
       ESP_LOGW(TAG, "I2C Communication Failed");
@@ -139,14 +139,14 @@ void TEM3200Component::update() {
         return;
     }
 
-    float temperature = convert_temperature_(temperature_raw);
+    float temperature = convert_temperature_(raw_temperature);
 
-    ESP_LOGD(TAG, "Got pressure=%draw temperature=%.1f°C", pressure_raw, temperature);
+    ESP_LOGD(TAG, "Got pressure=%draw temperature=%.1f°C", raw_pressure, temperature);
 
     if (this->temperature_sensor_ != nullptr)
       this->temperature_sensor_->publish_state(temperature);
     if (this->raw_pressure_sensor_ != nullptr)
-      this->raw_pressure_sensor_->publish_state(pressure_raw);
+      this->raw_pressure_sensor_->publish_state(raw_pressure);
 
     this->status_clear_warning();
   });
