@@ -70,7 +70,7 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
   // extract top 2 bits of first byte for status
   status = (ErrorCode) (response[0] & 0xc0) >> 6;
   if (status == RESERVED || status == FAULT) {
-    return err;
+    return i2c::ERROR_OK;
   }
 
   // if data is stale; reread
@@ -87,7 +87,7 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
   // extract top 2 bits of first byte for status
   status = (ErrorCode) (response[0] & 0xc0) >> 6;
   if (status == RESERVED || status == FAULT) {
-    return err;
+    return i2c::ERROR_OK;
   }
 
   // extract top 6 bits of first byte and all bits of second byte for pressure
@@ -96,7 +96,7 @@ i2c::ErrorCode TEM3200Component::read_(uint8_t &status, uint16_t &temperature_ra
   // extract all bytes of 3rd byte and top 3 bits of fourth byte for temperature
   temperature_raw = ((response[2] << 3) | (response[3] & 0xe0) >> 5);
 
-  return err;
+  return i2c::ERROR_OK;
 }
 
 float TEM3200Component::convert_temperature_(uint16_t temperature_raw) {
