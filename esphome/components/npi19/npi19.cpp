@@ -59,7 +59,7 @@ i2c::ErrorCode NPI19Component::read_(uint16_t &temperature_raw, uint16_t &pressu
   // extract all bytes of 3rd byte and top 3 bits of fourth byte for temperature
   temperature_raw = (response[2] << 3) | ((response[3] & 0xE0) >> 5);
 
-  return r_err;
+  return i2c::ERROR_OK;
 }
 
 float NPI19Component::convert_temperature_(uint16_t temperature_raw) {
