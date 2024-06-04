@@ -32,8 +32,8 @@ void NPI19Component::dump_config() {
   ESP_LOGCONFIG(TAG, "NPI19:");
   LOG_I2C_DEVICE(this);
   LOG_UPDATE_INTERVAL(this);
-  LOG_SENSOR("  ", "Temperature", this->temperature_sensor_);
   LOG_SENSOR("  ", "Pressure", this->pressure_sensor_);
+  LOG_SENSOR("  ", "Temperature", this->temperature_sensor_);
 }
 
 float NPI19Component::get_setup_priority() const { return setup_priority::DATA; }
@@ -101,7 +101,7 @@ void NPI19Component::update() {
 
     float temperature = convert_temperature_(temperature_raw);
 
-    ESP_LOGD(TAG, "Got temperature=%.1f°C  pressure=%draw", temperature, pressure_raw);
+    ESP_LOGD(TAG, "Got pressure=%draw temperature=%.1f°C", pressure_raw, temperature);
 
     if (this->temperature_sensor_ != nullptr)
       this->temperature_sensor_->publish_state(temperature);
