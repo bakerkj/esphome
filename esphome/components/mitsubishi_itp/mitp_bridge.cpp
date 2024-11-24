@@ -69,14 +69,13 @@ void ThermostatBridge::loop() {
                format_hex_pretty(&pkt.value().get_bytes()[0], pkt.value().get_length()).c_str());
     }
   } else if (!pkt_queue_.empty()) {
-    /*  
     ESP_LOGD(BRIDGE_TAG, "ThermostatBridge::loop: 2nd if()");
     // If there's a packet in the queue...
 
     ESP_LOGV(BRIDGE_TAG, "Sending to thermostat %s", pkt_queue_.front().to_string().c_str());
     write_raw_packet_(pkt_queue_.front().raw_packet());
     packet_sent_millis_ = millis();
-    */
+
     // Remove packet from queue
     pkt_queue_.pop();
   }
