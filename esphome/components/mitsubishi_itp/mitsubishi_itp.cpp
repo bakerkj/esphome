@@ -81,6 +81,9 @@ void MitsubishiUART::dump_config() {
   if (enhanced_mhk_support_) {
     ESP_LOGCONFIG(TAG, "MHK Enhanced Protocol Mode is ENABLED! This is currently *experimental* and things may break!");
   }
+  if (ts_bridge_) {
+    ESP_LOGCONFIG(TAG, "Thermostat uart was set. KJB");
+  }
 }
 
 // Set thermostat UART component
