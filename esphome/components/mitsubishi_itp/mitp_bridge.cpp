@@ -55,6 +55,9 @@ void HeatpumpBridge::loop() {
 // The thermostat bridge loop doesn't expect any responses, so packets in queue are just sent without checking if they
 // expect a response
 void ThermostatBridge::loop() {
+
+  ESP_LOGV(BRIDGE_TAG, "ThermostatBridge::loop: start()")
+  
   // Try to get a packet
   if (optional<RawPacket> pkt = receive_raw_packet_(SourceBridge::THERMOSTAT, ControllerAssociation::THERMOSTAT)) {
     ESP_LOGV(BRIDGE_TAG, "Parsing %x thermostat packet", pkt.value().get_packet_type());
@@ -75,6 +78,7 @@ void ThermostatBridge::loop() {
     // Remove packet from queue
     pkt_queue_.pop();
   }
+  ESP_LOGV(BRIDGE_TAG, "ThermostatBridge::loop: send()")
 }
 
 /* Queues a packet to be sent by the bridge.  If the queue is full, the packet will not be

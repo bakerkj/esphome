@@ -74,6 +74,8 @@ void MitsubishiUART::loop() {
 }
 
 void MitsubishiUART::dump_config() {
+  LOG_UPDATE_INTERVAL(this);
+
   if (capabilities_cache_.has_value()) {
     ESP_LOGCONFIG(TAG, "Discovered Capabilities: %s", capabilities_cache_.value().to_string().c_str());
   }
@@ -82,6 +84,9 @@ void MitsubishiUART::dump_config() {
     ESP_LOGCONFIG(TAG, "MHK Enhanced Protocol Mode is ENABLED! This is currently *experimental* and things may break!");
   }
   if (ts_bridge_) {
+    ESP_LOGCONFIG(TAG, "Thermostat bridge was set. KJB");
+  }
+  if (ts_uart_) {
     ESP_LOGCONFIG(TAG, "Thermostat uart was set. KJB");
   }
 }
