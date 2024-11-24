@@ -59,6 +59,8 @@ void ThermostatBridge::loop() {
   
   // Try to get a packet
   if (optional<RawPacket> pkt = receive_raw_packet_(SourceBridge::THERMOSTAT, ControllerAssociation::THERMOSTAT)) {
+    return;
+  
     ESP_LOGD(BRIDGE_TAG, "ThermostatBridge::loop: 1st if()");
     ESP_LOGV(BRIDGE_TAG, "Parsing %x thermostat packet", pkt.value().get_packet_type());
     // Check the packet's checksum and either process it, or log an error
